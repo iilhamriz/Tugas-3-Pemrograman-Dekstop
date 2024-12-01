@@ -91,6 +91,12 @@ class Menu {
 
     public Menu() {
         daftarMenu = new ArrayList<>();
+        // Tambahkan dummy data
+        tambahItem(new Makanan("Nasi Goreng", 25000, "Makanan", "Goreng"));
+        tambahItem(new Makanan("Ayam Bakar", 30000, "Makanan", "Bakar"));
+        tambahItem(new Minuman("Es Teh", 5000, "Minuman", "Dingin"));
+        tambahItem(new Minuman("Kopi Hitam", 10000, "Minuman", "Panas"));
+        tambahItem(new Diskon("Diskon Spesial", -5000, "Diskon", 20.0));
     }
 
     public void tambahItem(MenuItem item) {
@@ -98,6 +104,7 @@ class Menu {
     }
 
     public void tampilkanMenu() {
+        System.out.println("=== Daftar Menu ===");
         for (MenuItem item : daftarMenu) {
             item.tampilMenu();
         }
@@ -110,38 +117,6 @@ class Menu {
             }
         }
         throw new Exception("Item tidak ditemukan!");
-    }
-
-    public void simpanMenuKeFile(String fileName) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (MenuItem item : daftarMenu) {
-                writer.write(item.getNama() + "," + item.getHarga() + "," + item.getKategori());
-                if (item instanceof Diskon) {
-                    writer.write("," + ((Diskon) item).getPersentaseDiskon());
-                }
-                writer.newLine();
-            }
-        }
-    }
-
-    public void muatMenuDariFile(String fileName) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
-                String nama = data[0];
-                double harga = Double.parseDouble(data[1]);
-                String kategori = data[2];
-                if (kategori.equalsIgnoreCase("Diskon")) {
-                    double persentaseDiskon = Double.parseDouble(data[3]);
-                    daftarMenu.add(new Diskon(nama, harga, kategori, persentaseDiskon));
-                } else if (kategori.equalsIgnoreCase("Makanan")) {
-                    daftarMenu.add(new Makanan(nama, harga, kategori, "Tidak Disebutkan"));
-                } else if (kategori.equalsIgnoreCase("Minuman")) {
-                    daftarMenu.add(new Minuman(nama, harga, kategori, "Tidak Disebutkan"));
-                }
-            }
-        }
     }
 }
 
@@ -159,13 +134,10 @@ class Pesanan {
 
     public void tampilkanStruk() {
         double total = 0;
-        System.out.println("Struk Pesanan:");
+        System.out.println("=== Struk Pesanan ===");
         for (MenuItem item : itemPesanan) {
             System.out.println(item.getNama() + " - " + item.getHarga());
             total += item.getHarga();
-            if (item instanceof Diskon) {
-                total -= ((Diskon) item).getHarga();
-            }
         }
         System.out.println("Total: " + total);
     }
@@ -175,11 +147,11 @@ class Pesanan {
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Menu menu = new Menu();
+        Menu menu = new Menu(); // Menu dengan dummy data
         Pesanan pesanan = new Pesanan();
 
         while (true) {
-            System.out.println("=== Menu Utama ===");
+            System.out.println("\n=== Menu Utama ===");
             System.out.println("1. Tambah Item ke Menu");
             System.out.println("2. Tampilkan Menu");
             System.out.println("3. Tambah Pesanan");
@@ -187,7 +159,7 @@ public class Main {
             System.out.println("5. Keluar");
             System.out.print("Pilih: ");
             int pilihan = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Membersihkan buffer
 
             try {
                 switch (pilihan) {
@@ -231,7 +203,6 @@ public class Main {
                     case 5:
                         System.out.println("Terima kasih!");
                         System.exit(0);
-                        break;
                     default:
                         System.out.println("Pilihan tidak valid!");
                 }
